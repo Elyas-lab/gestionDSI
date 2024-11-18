@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Tache;
 use App\Form\TacheType;
 use App\Repository\TacheRepository;
+use App\Service\HistoriqueService;
+use App\DTO\TypeElement;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +16,13 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/tache')]
 final class TacheController extends AbstractController
 {
+    private $historiqueService;
+
+    public function __construct(HistoriqueService $historiqueService)
+    {
+        $this->historiqueService = $historiqueService;
+    }
+
     #[Route(name: 'app_tache_index', methods: ['GET'])]
     public function index(TacheRepository $tacheRepository): Response
     {
@@ -33,6 +42,12 @@ final class TacheController extends AbstractController
             $entityManager->persist($tache);
             $entityManager->flush();
 
+            $this->historiqueService->addHistorique(
+                TypeElement::Tache,
+                $tache->getId(),
+                'Création d\'une nouvelle tâche'
+            );
+
             return $this->redirectToRoute('app_tache_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -45,8 +60,14 @@ final class TacheController extends AbstractController
     #[Route('/{id}', name: 'app_tache_show', methods: ['GET'])]
     public function show(Tache $tache): Response
     {
+        $historique = $this->historiqueService->getHistorique(
+            TypeElement::Tache->value,
+            $tache->getId()
+        );
+
         return $this->render('tache/show.html.twig', [
             'tache' => $tache,
+            'historique' => $historique,
         ]);
     }
 
@@ -58,6 +79,12 @@ final class TacheController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
+
+            $this->historiqueService->addHistorique(
+                TypeElement::Tache,
+                $tache->getId(),
+                'Modification de la tâche'
+            );
 
             return $this->redirectToRoute('app_tache_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -72,8 +99,16 @@ final class TacheController extends AbstractController
     public function delete(Request $request, Tache $tache, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$tache->getId(), $request->getPayload()->getString('_token'))) {
+            $tacheId = $tache->getId();
+            
             $entityManager->remove($tache);
             $entityManager->flush();
+
+            $this->historiqueService->addHistorique(
+                TypeElement::Tache,
+                $tacheId,
+                'Suppression de la tâche'
+            );
         }
 
         return $this->redirectToRoute('app_tache_index', [], Response::HTTP_SEE_OTHER);

@@ -1,10 +1,11 @@
 <?php
-
 namespace App\Controller;
 
 use App\Entity\Projet;
 use App\Form\ProjetType;
 use App\Repository\ProjetRepository;
+use App\Service\HistoriqueService;
+use App\DTO\TypeElement;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +15,13 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/projet')]
 final class ProjetController extends AbstractController
 {
+    private $historiqueService;
+
+    public function __construct(HistoriqueService $historiqueService)
+    {
+        $this->historiqueService = $historiqueService;
+    }
+
     #[Route(name: 'app_projet_index', methods: ['GET'])]
     public function index(ProjetRepository $projetRepository): Response
     {
@@ -33,6 +41,12 @@ final class ProjetController extends AbstractController
             $entityManager->persist($projet);
             $entityManager->flush();
 
+            $this->historiqueService->addHistorique(
+                TypeElement::Projet,
+                $projet->getId(),
+                'Création d\'un nouveau projet'
+            );
+
             return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -45,8 +59,14 @@ final class ProjetController extends AbstractController
     #[Route('/{id}', name: 'app_projet_show', methods: ['GET'])]
     public function show(Projet $projet): Response
     {
+        $historique = $this->historiqueService->getHistorique(
+            TypeElement::Projet->value,
+            $projet->getId()
+        );
+
         return $this->render('projet/show.html.twig', [
             'projet' => $projet,
+            'historique' => $historique,
         ]);
     }
 
@@ -58,6 +78,12 @@ final class ProjetController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
+
+            $this->historiqueService->addHistorique(
+                TypeElement::Projet,
+                $projet->getId(),
+                'Modification du projet'
+            );
 
             return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -72,8 +98,16 @@ final class ProjetController extends AbstractController
     public function delete(Request $request, Projet $projet, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$projet->getId(), $request->getPayload()->getString('_token'))) {
+            $projetId = $projet->getId();
+            
             $entityManager->remove($projet);
             $entityManager->flush();
+
+            $this->historiqueService->addHistorique(
+                TypeElement::Projet,
+                $projetId,
+                'Suppression du projet'
+            );
         }
 
         return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);

@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Demande;
 use App\Form\DemandeType;
 use App\Repository\DemandeRepository;
+use App\Service\HistoriqueService;
+use App\DTO\TypeElement;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +16,13 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/demande')]
 final class DemandeController extends AbstractController
 {
+    private $historiqueService;
+
+    public function __construct(HistoriqueService $historiqueService)
+    {
+        $this->historiqueService = $historiqueService;
+    }
+
     #[Route(name: 'app_demande_index', methods: ['GET'])]
     public function index(DemandeRepository $demandeRepository): Response
     {
@@ -33,6 +42,12 @@ final class DemandeController extends AbstractController
             $entityManager->persist($demande);
             $entityManager->flush();
 
+            $this->historiqueService->addHistorique(
+                TypeElement::Demande,
+                $demande->getId(),
+                'Création d\'une nouvelle demande'
+            );
+
             return $this->redirectToRoute('app_demande_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -45,8 +60,14 @@ final class DemandeController extends AbstractController
     #[Route('/{id}', name: 'app_demande_show', methods: ['GET'])]
     public function show(Demande $demande): Response
     {
+        $historique = $this->historiqueService->getHistorique(
+            TypeElement::Demande->value,
+            $demande->getId()
+        );
+
         return $this->render('demande/show.html.twig', [
             'demande' => $demande,
+            'historique' => $historique,
         ]);
     }
 
@@ -58,6 +79,12 @@ final class DemandeController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
+
+            $this->historiqueService->addHistorique(
+                TypeElement::Demande,
+                $demande->getId(),
+                'Modification de la demande'
+            );
 
             return $this->redirectToRoute('app_demande_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -72,8 +99,16 @@ final class DemandeController extends AbstractController
     public function delete(Request $request, Demande $demande, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$demande->getId(), $request->getPayload()->getString('_token'))) {
+            $demandeId = $demande->getId();
+            
             $entityManager->remove($demande);
             $entityManager->flush();
+
+            $this->historiqueService->addHistorique(
+                TypeElement::Demande,
+                $demandeId,
+                'Suppression de la demande'
+            );
         }
 
         return $this->redirectToRoute('app_demande_index', [], Response::HTTP_SEE_OTHER);
