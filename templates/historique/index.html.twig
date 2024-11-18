@@ -50,7 +50,7 @@
     </style>
 {% endblock %}
 
-{% block mainb %}
+{% block main %}
     <div class="container-fluid py-4">
         <div class="row mb-4">
             <div class="col">
@@ -205,31 +205,7 @@
                     </div>
 
                     {# Pagination #}
-                    {% if pages > 1 %}
-                        <nav aria-label="Navigation des pages" class="mt-4">
-                            <ul class="pagination justify-content-center">
-                                <li class="page-item {{ page <= 1 ? 'disabled' : '' }}">
-                                    <a class="page-link" href="{{ path('app_historique_index', app.request.query.all|merge({page: page - 1})) }}">
-                                        Précédent
-                                    </a>
-                                </li>
-                                
-                                {% for i in 1..pages %}
-                                    <li class="page-item {{ page == i ? 'active' : '' }}">
-                                        <a class="page-link" href="{{ path('app_historique_index', app.request.query.all|merge({page: i})) }}">
-                                            {{ i }}
-                                        </a>
-                                    </li>
-                                {% endfor %}
-                                
-                                <li class="page-item {{ page >= pages ? 'disabled' : '' }}">
-                                    <a class="page-link" href="{{ path('app_historique_index', app.request.query.all|merge({page: page + 1})) }}">
-                                        Suivant
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    {% endif %}
+                    {{ knp_pagination_render(historique) }}
                 {% endif %}
             </div>
         </div>

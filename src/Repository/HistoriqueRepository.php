@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Historique;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 class HistoriqueRepository extends ServiceEntityRepository
@@ -13,26 +14,38 @@ class HistoriqueRepository extends ServiceEntityRepository
         parent::__construct($registry, Historique::class);
     }
 
-    /**
-     * Récupère l'historique avec pagination
-     */
-    public function findHistoriqueWithPagination(array $criteria = [], int $page = 1, int $limit = 10)
+    public function createHistoriqueQuery(array $criteria = []): Query
     {
         $qb = $this->createQueryBuilder('h')
             ->leftJoin('h.utilisateur', 'u')
-            ->addSelect('u');
-
-        // Applique les critères de recherche
-        foreach ($criteria as $field => $value) {
-            if ($value !== null) {
-                $qb->andWhere("h.$field = :$field")
-                   ->setParameter($field, $value);
-            }
+            ->addSelect('u')
+            ->orderBy('h.dateHistorique', 'DESC');
+    
+        // Filtrer par type
+        if (!empty($criteria['type'])) {
+            $qb->andWhere('h.typeElement = :type')
+               ->setParameter('type', $criteria['type']);
         }
-
-        return $qb->orderBy('h.dateHistorique', 'DESC')
-            ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit)
+    
+        // Filtrer par date de début
+        if (!empty($criteria['dateDebut'])) {
+            $qb->andWhere('h.dateHistorique >= :dateDebut')
+               ->setParameter('dateDebut', $criteria['dateDebut']);
+        }
+    
+        // Filtrer par date de fin
+        if (!empty($criteria['dateFin'])) {
+            $qb->andWhere('h.dateHistorique <= :dateFin')
+               ->setParameter('dateFin', $criteria['dateFin']);
+        }
+    
+        return $qb->getQuery();
+    }
+    
+    public function findUniqueTypes(): array
+    {
+        return $this->createQueryBuilder('h')
+            ->select('DISTINCT h.typeElement')
             ->getQuery()
             ->getResult();
     }
