@@ -1,0 +1,99 @@
+{% block element_historique %}
+<div class="historique-element">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-history me-2"></i>
+                Historique des modifications
+            </h5>
+            <a href="{{ path('app_historique_index', {
+                'type': type,
+                'idElement': id
+            }) }}" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-external-link-alt me-1"></i>
+                Voir tout l'historique
+            </a>
+        </div>
+        <div class="card-body p-0">
+            {% if historique is empty %}
+                <div class="p-3 text-center text-muted">
+                    <em>Aucune modification enregistrée</em>
+                </div>
+            {% else %}
+                <div class="timeline p-3">
+                    {% for entry in historique %}
+                        <div class="timeline-item pb-3">
+                            <div class="d-flex">
+                                <div class="timeline-marker me-3">
+                                    <div class="timeline-icon">
+                                        <i class="fas fa-circle text-primary"></i>
+                                    </div>
+                                    {% if not loop.last %}
+                                        <div class="timeline-line"></div>
+                                    {% endif %}
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                        <div>
+                                            <strong>{{ entry.detailsHistorique }}</strong>
+                                        </div>
+                                        <small class="text-muted ms-3" title="{{ entry.dateHistorique|date('d/m/Y H:i:s') }}">
+                                            {{ entry.dateHistorique|date('d/m/Y H:i') }}
+                                        </small>
+                                    </div>
+                                    <div class="text-muted">
+                                        {% if entry.utilisateur %}
+                                            <a href="{{ path('app_utilisateur_show', {id: entry.utilisateur.id}) }}" class="text-decoration-none">
+                                                <i class="fas fa-user me-1"></i>
+                                                {{ entry.utilisateur.prenom }} {{ entry.utilisateur.nom }}
+                                            </a>
+                                        {% else %}
+                                            <em>Système</em>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+}
+.timeline-item {
+    position: relative;
+}
+.timeline-marker {
+    position: relative;
+    width: 24px;
+}
+.timeline-icon {
+    width: 12px;
+    height: 12px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.timeline-icon i {
+    font-size: 12px;
+}
+.timeline-line {
+    position: absolute;
+    left: 6px;
+    top: 16px;
+    bottom: -12px;
+    width: 2px;
+    background-color: #e5e7eb;
+}
+.timeline-content {
+    flex: 1;
+    min-width: 0;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,4 @@
+- creer les interfaces d'historique et d'acceuil
+- optimiser  des requests existant
+- styliser les interfaces
+- documenter les code existant

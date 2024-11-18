@@ -1,0 +1,30 @@
+{% extends 'inside.html.twig' %}
+
+{% block title %}StatutDemande{% endblock %}
+
+{% block main %}
+    <h1>StatutDemande</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ statut_demande.id }}</td>
+            </tr>
+            <tr>
+                <th>Titre</th>
+                <td>{{ statut_demande.titre }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ statut_demande.description }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_statut_demande_index') }}">back to list</a>
+
+    <a href="{{ path('app_statut_demande_edit', {'id': statut_demande.id}) }}">edit</a>
+
+    {{ include('statut_demande/_delete_form.html.twig') }}
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'inside.html.twig' %}
+
+{% block title %}Assistance index{% endblock %}
+
+{% block main %}
+    <h1>Assistance index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Titre</th>
+                <th>Description</th>
+                <th>Date_insertion</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for assistance in assistances %}
+            <tr>
+                <td>{{ assistance.id }}</td>
+                <td>{{ assistance.titre }}</td>
+                <td>{{ assistance.description }}</td>
+                <td>{{ assistance.dateInsertion ? assistance.dateInsertion|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_assistance_show', {'id': assistance.id}) }}">show</a>
+                    <a href="{{ path('app_assistance_edit', {'id': assistance.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_assistance_new') }}">Create new</a>
+{% endblock %}

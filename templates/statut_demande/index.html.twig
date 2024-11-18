@@ -1,0 +1,37 @@
+{% extends 'inside.html.twig' %}
+
+{% block title %}StatutDemande index{% endblock %}
+
+{% block main %}
+    <h1>StatutDemande index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Titre</th>
+                <th>Description</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for statut_demande in statut_demandes %}
+            <tr>
+                <td>{{ statut_demande.id }}</td>
+                <td>{{ statut_demande.titre }}</td>
+                <td>{{ statut_demande.description }}</td>
+                <td>
+                    <a href="{{ path('app_statut_demande_show', {'id': statut_demande.id}) }}">show</a>
+                    <a href="{{ path('app_statut_demande_edit', {'id': statut_demande.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_statut_demande_new') }}">Create new</a>
+{% endblock %}

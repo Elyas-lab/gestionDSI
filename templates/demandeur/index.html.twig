@@ -1,0 +1,35 @@
+{% extends 'inside.html.twig' %}
+
+{% block title %}Demandeur index{% endblock %}
+
+{% block main %}
+    <h1>Demandeur index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Entite_demandeur</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for demandeur in demandeurs %}
+            <tr>
+                <td>{{ demandeur.id }}</td>
+                <td>{{ demandeur.EntiteDemandeur }}</td>
+                <td>
+                    <a href="{{ path('app_demandeur_show', {'id': demandeur.id}) }}">show</a>
+                    <a href="{{ path('app_demandeur_edit', {'id': demandeur.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_demandeur_new') }}">Create new</a>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title  %}Acceuil{% endblock %}
+
+{% block body %}
+
+    
+    <!-- Conteneur principal -->
+    <div class="container-fluid flex">  
+        <div class="row">
+            <!-- Inclure la sidebar ici -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light ">
+                {% include ('index/sidebar.html.twig' )%}
+            </nav>
+        
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+
+                <h2>Bienvenue sur le site de gestion d'activités!</h2>
+
+                <p>
+                    Vous pouvez accéder à toutes les ressources disponibles dans le menu ci-dessus.
+                </p>
+            </main>
+        </div>    
+    </div>
+
+{% endblock %}

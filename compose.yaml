@@ -1,0 +1,16 @@
+
+services:
+  oracle:
+    image: oracleinanutshell/oracle-xe-11g
+    environment:
+      - ORACLE_DATABASE=XE
+      - ORACLE_PASSWORD=azertyuiop
+    ports:
+      - 1521:1521
+      - 8080:8080
+    volumes:
+      - oracle-data:/u01/app/oracle
+
+volumes:
+  oracle-data:
+    driver: local

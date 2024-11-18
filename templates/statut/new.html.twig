@@ -1,0 +1,11 @@
+{% extends 'inside.html.twig' %}
+
+{% block title %}New Statut{% endblock %}
+
+{% block main %}
+    <h1>Create new Statut</h1>
+
+    {{ include('statut/_form.html.twig') }}
+
+    <a href="{{ path('app_statut_index') }}">back to list</a>
+{% endblock %}
