@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\DTO\RoleDTO;
 use App\Repository\GroupeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -32,48 +33,32 @@ class Groupe
         $this->membres = new ArrayCollection();
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    // ... autres getters et setters ...
 
-    public function getTitre(): ?string
+    public function setValeur(string $valeur): static
     {
-        return $this->titre;
-    }
+        if (!RoleDTO::isGroupeValid($valeur)) {
+            throw new \InvalidArgumentException('Type de groupe invalide');
+        }
 
-    public function setTitre(string $titre): static
-    {
-        $this->titre = $titre;
-
+        $this->valeur = $valeur;
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getRolesByGroupe(): array
     {
-        return $this->description;
+        return RoleDTO::getRolesByGroupe($this->valeur);
     }
-
-    public function setDescription(?string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Utilisateur>
-     */
-    public function getMembres(): Collection
-    {
-        return $this->membres;
-    }
-    
 
     public function addMembre(Utilisateur $membre): static
     {
         if (!$this->membres->contains($membre)) {
             $this->membres->add($membre);
+            // Met à jour les rôles de l'utilisateur
+            $membre->setRoles(array_unique(array_merge(
+                $membre->getRoles(),
+                $this->getRolesByGroupe()
+            )));
         }
 
         return $this;
@@ -81,19 +66,13 @@ class Groupe
 
     public function removeMembre(Utilisateur $membre): static
     {
-        $this->membres->removeElement($membre);
-
-        return $this;
-    }
-
-    public function getValeur(): ?string
-    {
-        return $this->valeur;
-    }
-
-    public function setValeur(string $valeur): static
-    {
-        $this->valeur = $valeur;
+        if ($this->membres->removeElement($membre)) {
+            // Retire les rôles associés au groupe
+            $membre->setRoles(array_diff(
+                $membre->getRoles(),
+                $this->getRolesByGroupe()
+            ));
+        }
 
         return $this;
     }

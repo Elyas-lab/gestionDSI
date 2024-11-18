@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\DTO\RoleDTO;
 use App\Repository\UtilisateurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -21,106 +22,149 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180)]
     private ?string $matricule = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $nom = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $prenom = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $email = null;
+
     /**
-     * @var list<string> The user roles
+     * @var list<string> Les rôles de l'utilisateur
      */
     #[ORM\Column]
     private array $roles = [];
 
     /**
-     * @var string The hashed password
+     * Mot de passe haché
      */
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $nom_utilisateur = null;
+    /**
+     * Mot de passe en clair temporaire (non stocké en base)
+     */
+    private ?string $plainPassword = null;
 
     /**
+     * Groupes auxquels l'utilisateur appartient
      * @var Collection<int, Groupe>
      */
-    #[ORM\OneToMany(targetEntity: Groupe::class, mappedBy: 'membre')]
+    #[ORM\ManyToMany(targetEntity: Groupe::class, mappedBy: 'membres')]
     private Collection $groupes;
 
     /**
+     * Projets dont l'utilisateur est le chef de projet
      * @var Collection<int, Projet>
      */
-    #[ORM\OneToMany(targetEntity: Projet::class, mappedBy: 'chef_de_projet')]
-    private Collection $projets;
+    #[ORM\OneToMany(targetEntity: Projet::class, mappedBy: 'chefDeProjet')]
+    private Collection $projetsDiriges;
 
     /**
+     * Projets auxquels l'utilisateur participe
      * @var Collection<int, Projet>
      */
-    #[ORM\ManyToMany(targetEntity: Projet::class, mappedBy: 'ressource')]
-    private Collection $projet;
+    #[ORM\ManyToMany(targetEntity: Projet::class, mappedBy: 'ressources')]
+    private Collection $projetsParticipes;
 
     /**
+     * Activités dont l'utilisateur est responsable
      * @var Collection<int, Activite>
      */
-    #[ORM\ManyToMany(targetEntity: Activite::class, mappedBy: 'responsable')]
-    private Collection $activites;
+    #[ORM\ManyToMany(targetEntity: Activite::class, mappedBy: 'responsables')]
+    private Collection $activitesResponsables;
 
     public function __construct()
     {
+        // Initialisation des collections
         $this->groupes = new ArrayCollection();
-        $this->projets = new ArrayCollection();
-        $this->projet = new ArrayCollection();
-        $this->activites = new ArrayCollection();
+        $this->projetsDiriges = new ArrayCollection();
+        $this->projetsParticipes = new ArrayCollection();
+        $this->activitesResponsables = new ArrayCollection();
+
+        // Rôle par défaut
+        $this->roles = [RoleDTO::ROLE_USER];
     }
 
+    /**
+     * Getters et Setters
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getNomUtilisateur(): ?string
+    public function getMatricule(): ?string
     {
         return $this->matricule;
     }
 
-    public function setNomUtilisateur(string $matricule): static
+    public function setMatricule(string $matricule): static
     {
         $this->matricule = $matricule;
+        return $this;
+    }
 
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): static
+    {
+        $this->nom = $nom;
+        return $this;
+    }
+
+    public function getPrenom(): ?string
+    {
+        return $this->prenom;
+    }
+
+    public function setPrenom(string $prenom): static
+    {
+        $this->prenom = $prenom;
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): static
+    {
+        $this->email = $email;
         return $this;
     }
 
     /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
+     * Méthodes de UserInterface
      */
     public function getUserIdentifier(): string
     {
         return (string) $this->matricule;
     }
 
-    /**
-     * @see UserInterface
-     *
-     * @return list<string>
-     */
     public function getRoles(): array
     {
+        // Garantit que chaque utilisateur a au moins ROLE_USER
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
+        $roles[] = RoleDTO::ROLE_USER;
+        
         return array_unique($roles);
     }
 
-    /**
-     * @param list<string> $roles
-     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
-
         return $this;
     }
 
     /**
-     * @see PasswordAuthenticatedUserInterface
+     * Gestion du mot de passe
      */
     public function getPassword(): ?string
     {
@@ -130,20 +174,28 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
         return $this;
     }
 
-    /**
-     * @see UserInterface
-     */
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $plainPassword): static
+    {
+        $this->plainPassword = $plainPassword;
+        return $this;
+    }
+
     public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        // Efface le mot de passe en clair
+        $this->plainPassword = null;
     }
 
     /**
+     * Gestion des Groupes
      * @return Collection<int, Groupe>
      */
     public function getGroupes(): Collection
@@ -155,7 +207,12 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->groupes->contains($groupe)) {
             $this->groupes->add($groupe);
-            $groupe->addMembre($this);
+            
+            // Mise à jour des rôles
+            $this->setRoles(array_unique(array_merge(
+                $this->getRoles(),
+                $groupe->getRolesByGroupe()
+            )));
         }
 
         return $this;
@@ -164,77 +221,57 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeGroupe(Groupe $groupe): static
     {
         if ($this->groupes->removeElement($groupe)) {
-            // set the owning side to null (unless already changed)
-            if ($groupe->getMembres() === $this) {
-                $groupe->removeMembre($this);
-            }
+            // Mise à jour des rôles en retirant les rôles du groupe
+            $this->setRoles(array_diff(
+                $this->getRoles(),
+                $groupe->getRolesByGroupe()
+            ));
         }
 
         return $this;
+    }
+
+    /**
+     * Gestion des Projets
+     * @return Collection<int, Projet>
+     */
+    public function getProjetsDiriges(): Collection
+    {
+        return $this->projetsDiriges;
     }
 
     /**
      * @return Collection<int, Projet>
      */
-    public function getProjets(): Collection
+    public function getProjetsParticipes(): Collection
     {
-        return $this->projets;
-    }
-
-    public function addProjet(Projet $projet): static
-    {
-        if (!$this->projets->contains($projet)) {
-            $this->projets->add($projet);
-            $projet->setChefDeProjet($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProjet(Projet $projet): static
-    {
-        if ($this->projets->removeElement($projet)) {
-            // set the owning side to null (unless already changed)
-            if ($projet->getChefDeProjet() === $this) {
-                $projet->setChefDeProjet(null);
-            }
-        }
-
-        return $this;
+        return $this->projetsParticipes;
     }
 
     /**
-     * @return Collection<int, Projet>
-     */
-    public function getProjet(): Collection
-    {
-        return $this->projet;
-    }
-
-    /**
+     * Gestion des Activités
      * @return Collection<int, Activite>
      */
-    public function getActivites(): Collection
+    public function getActivitesResponsables(): Collection
     {
-        return $this->activites;
+        return $this->activitesResponsables;
     }
 
-    public function addActivite(Activite $activite): static
+    /**
+     * Méthodes utilitaires
+     */
+    public function getNomComplet(): string
     {
-        if (!$this->activites->contains($activite)) {
-            $this->activites->add($activite);
-            $activite->addResponsable($this);
-        }
-
-        return $this;
+        return sprintf('%s %s', $this->prenom, $this->nom);
     }
 
-    public function removeActivite(Activite $activite): static
+    public function hasRole(string $role): bool
     {
-        if ($this->activites->removeElement($activite)) {
-            $activite->removeResponsable($this);
-        }
+        return in_array($role, $this->getRoles());
+    }
 
-        return $this;
+    public function __toString(): string
+    {
+        return $this->getNomComplet();
     }
 }
