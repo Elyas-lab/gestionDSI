@@ -5,7 +5,7 @@ use App\Entity\Projet;
 use App\Form\ProjetType;
 use App\Repository\ProjetRepository;
 use App\Service\HistoriqueService;
-use App\DTO\TypeElement;
+use App\Entity\DTO\TypeElement;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

@@ -1,15 +1,17 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use App\Entity\Groupe;
 use App\Form\GroupeType;
 use App\Repository\GroupeRepository;
+use App\Service\Gestion\GroupeGestion;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/groupe')]
 final class GroupeController extends AbstractController
@@ -42,7 +44,7 @@ final class GroupeController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_groupe_show', methods: ['GET'])]
+    #[Route('/show/{id}', name: 'app_groupe_show', methods: ['GET'])]
     public function show(Groupe $groupe): Response
     {
         return $this->render('groupe/show.html.twig', [
@@ -78,4 +80,17 @@ final class GroupeController extends AbstractController
 
         return $this->redirectToRoute('app_groupe_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/initialize', name: 'app_groupe_initialize', methods: ['POST', 'GET'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function initializeGroupes(GroupeGestion $groupeInitService): Response
+    {
+        // Appelle la méthode du service pour initialiser les groupes par défaut
+        $groupeInitService->initializeDefaultGroups();
+
+        $this->addFlash('success', 'Les groupes par défaut ont été initialisés avec succès.');
+
+        return $this->redirectToRoute('app_groupe_index', [], Response::HTTP_SEE_OTHER);
+    }
+
 }

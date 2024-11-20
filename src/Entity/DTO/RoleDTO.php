@@ -1,18 +1,16 @@
 <?php
 
-namespace App\DTO;
+namespace App\Entity\DTO;
 
 class RoleDTO
 {
     // Types de groupes
     public const GROUPE_ADMIN = 'ADMIN';
-    public const GROUPE_MANAGER = 'MANAGER';
     public const GROUPE_CHEF_PROJET = 'CHEF_PROJET';
     public const GROUPE_UTILISATEUR = 'UTILISATEUR';
 
     // Rôles correspondants aux groupes
     public const ROLE_ADMIN = 'ROLE_ADMIN';
-    public const ROLE_MANAGER = 'ROLE_MANAGER';
     public const ROLE_CHEF_PROJET = 'ROLE_CHEF_PROJET';
     public const ROLE_USER = 'ROLE_USER';
 
@@ -20,12 +18,6 @@ class RoleDTO
     public const GROUPE_ROLES_MAP = [
         self::GROUPE_ADMIN => [
             self::ROLE_ADMIN,
-            self::ROLE_MANAGER,
-            self::ROLE_CHEF_PROJET,
-            self::ROLE_USER
-        ],
-        self::GROUPE_MANAGER => [
-            self::ROLE_MANAGER,
             self::ROLE_CHEF_PROJET,
             self::ROLE_USER
         ],
@@ -41,7 +33,6 @@ class RoleDTO
     // Liste des groupes valides
     public const GROUPES_VALIDES = [
         self::GROUPE_ADMIN,
-        self::GROUPE_MANAGER,
         self::GROUPE_CHEF_PROJET,
         self::GROUPE_UTILISATEUR
     ];

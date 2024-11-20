@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\DTO\RoleDTO;
+use App\Entity\DTO\RoleDTO;
 use App\Repository\GroupeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -33,7 +33,22 @@ class Groupe
         $this->membres = new ArrayCollection();
     }
 
-    // ... autres getters et setters ...
+    public function getId():?int
+    {   return $this->id; }
+    public function getTitre():?string
+    {   return $this->titre; }
+    public function setTitre(string $titre): static{ 
+        $this->titre = $titre;
+        return $this;  
+    }
+    public function getDescription():?string{   return $this->description; }
+    public function setDescription(string $description): static{
+        $this->description = $description;
+        return $this;
+    }
+    public function getMembres(): Collection{   return $this->membres; }
+
+    public function getValeur():?string{   return $this->valeur; }
 
     public function setValeur(string $valeur): static
     {

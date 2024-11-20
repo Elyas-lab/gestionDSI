@@ -3,35 +3,57 @@
 {% block title %}Statut index{% endblock %}
 
 {% block main %}
-    <h1>Statut index</h1>
+    <h1>Liste des Statuts</h1>
 
-    <table class="table">
+    <a href="{{ path('app_statut_new') }}" class="btn btn-primary">Create new</a>
+
+    <table id="statut-table" class="table table-striped">
         <thead>
             <tr>
                 <th>Id</th>
                 <th>Titre</th>
                 <th>Description</th>
-                <th>actions</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-        {% for statut in statuts %}
-            <tr>
-                <td>{{ statut.id }}</td>
-                <td>{{ statut.titre }}</td>
-                <td>{{ statut.description }}</td>
-                <td>
-                    <a href="{{ path('app_statut_show', {'id': statut.id}) }}">show</a>
-                    <a href="{{ path('app_statut_edit', {'id': statut.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="4">no records found</td>
-            </tr>
-        {% endfor %}
+            {% for statut in statuts %}
+                <tr>
+                    <td>{{ statut.id }}</td>
+                    <td>{{ statut.titre }}</td>
+                    <td>{{ statut.description }}</td>
+                    <td>
+                        <a href="{{ path('app_statut_show', {'id': statut.id}) }}" class="btn btn-info btn-sm">Show</a>
+                        <a href="{{ path('app_statut_edit', {'id': statut.id}) }}" class="btn btn-warning btn-sm">Edit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">No records found</td>
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_statut_new') }}">Create new</a>
+    <div class="pagination">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+
+<script>
+    $(document).ready(function () {
+        $('#statut-table').DataTable({
+            paging: false, // Désactiver la pagination de DataTables
+            searching: true,
+            ordering: true,
+            language: {
+                search: "Rechercher:",
+                zeroRecords: "Aucune donnée trouvée",
+                info: "Affichage de _START_ à _END_ sur _TOTAL_ entrées",
+                infoEmpty: "Aucune entrée disponible",
+                infoFiltered: "(filtré à partir de _MAX_ entrées totales)",
+            }
+        });
+    });
+</script>    
+
 {% endblock %}

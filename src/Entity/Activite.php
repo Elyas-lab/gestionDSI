@@ -26,7 +26,7 @@ class Activite
      * @var Collection<int, Utilisateur>
      */
     #[ORM\ManyToMany(targetEntity: Utilisateur::class, inversedBy: 'activites')]
-    private Collection $responsable;
+    private Collection $responsables;
 
     #[ORM\ManyToOne(inversedBy: 'activites')]
     #[ORM\JoinColumn(nullable: false)]
@@ -56,7 +56,7 @@ class Activite
 
     public function __construct()
     {
-        $this->responsable = new ArrayCollection();
+        $this->responsables = new ArrayCollection();
         $this->taches = new ArrayCollection();
     }
 
@@ -94,13 +94,13 @@ class Activite
      */
     public function getResponsable(): Collection
     {
-        return $this->responsable;
+        return $this->responsables;
     }
 
     public function addResponsable(Utilisateur $responsable): static
     {
-        if (!$this->responsable->contains($responsable)) {
-            $this->responsable->add($responsable);
+        if (!$this->responsables->contains($responsable)) {
+            $this->responsables->add($responsable);
         }
 
         return $this;
@@ -108,7 +108,7 @@ class Activite
 
     public function removeResponsable(Utilisateur $responsable): static
     {
-        $this->responsable->removeElement($responsable);
+        $this->responsables->removeElement($responsable);
 
         return $this;
     }

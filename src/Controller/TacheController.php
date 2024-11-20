@@ -6,7 +6,7 @@ use App\Entity\Tache;
 use App\Form\TacheType;
 use App\Repository\TacheRepository;
 use App\Service\HistoriqueService;
-use App\DTO\TypeElement;
+use App\Entity\DTO\TypeElement;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\DTO\RoleDTO;
+use App\Entity\DTO\RoleDTO;
 use App\Entity\Groupe;
 use App\Entity\Utilisateur;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -73,10 +73,8 @@ class GroupeType extends AbstractType
                 'class' => Utilisateur::class,
                 'label' => 'Membres du groupe',
                 'choice_label' => function(Utilisateur $utilisateur) {
-                    return sprintf('%s %s (%s)', 
-                        $utilisateur->getPrenom(), 
-                        $utilisateur->getNom(), 
-                        $utilisateur->getMatricule()
+                    return sprintf(' %s ',  
+                        $utilisateur->getNom()
                     );
                 },
                 'multiple' => true,

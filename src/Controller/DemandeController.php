@@ -6,7 +6,7 @@ use App\Entity\Demande;
 use App\Form\DemandeType;
 use App\Repository\DemandeRepository;
 use App\Service\HistoriqueService;
-use App\DTO\TypeElement;
+use App\Entity\DTO\TypeElement;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

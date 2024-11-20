@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services;
+namespace App\Service;
 
-use App\DTO\TypeElement;
+use App\Entity\DTO\TypeElement;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;

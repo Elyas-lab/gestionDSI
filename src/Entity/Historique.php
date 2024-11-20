@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Repository\HistoriqueRepository;
 use Doctrine\ORM\Mapping as ORM;
-use App\DTO\TypeElement;
+use App\Entity\DTO\TypeElement;
 
 #[ORM\Entity(repositoryClass: HistoriqueRepository::class)]
 #[ORM\Table(name: 'historique')]

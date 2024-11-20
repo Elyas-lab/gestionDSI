@@ -5,7 +5,7 @@ namespace App\Service;
 use App\Entity\Historique;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
-use App\DTO\TypeElement;
+use App\Entity\DTO\TypeElement;
 use DateTime;
 
 class HistoriqueService

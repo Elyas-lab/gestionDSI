@@ -22,14 +22,14 @@ class Projet
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\ManyToOne(inversedBy: 'projets')]
+    #[ORM\ManyToOne(inversedBy: 'projetsDiriges')]
     private ?Utilisateur $chef_de_projet = null;
 
     /**
      * @var Collection<int, Utilisateur>
      */
-    #[ORM\ManyToMany(targetEntity: Utilisateur::class, inversedBy: 'projet')]
-    private Collection $ressource;
+    #[ORM\ManyToMany(targetEntity: Utilisateur::class, inversedBy: 'projetsParticipes')]
+    private Collection $ressources;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $date_debut_estimmee = null;
@@ -55,7 +55,7 @@ class Projet
 
     public function __construct()
     {
-        $this->ressource = new ArrayCollection();
+        $this->ressources = new ArrayCollection();
         $this->activites = new ArrayCollection();
     }
 
@@ -105,21 +105,21 @@ class Projet
      */
     public function getRessource(): Collection
     {
-        return $this->ressource;
+        return $this->ressources;
     }
 
-    public function addRessource(Utilisateur $ressource): static
+    public function addRessource(Utilisateur $ressources): static
     {
-        if (!$this->ressource->contains($ressource)) {
-            $this->ressource->add($ressource);
+        if (!$this->ressources->contains($ressources)) {
+            $this->ressources->add($ressources);
         }
 
         return $this;
     }
 
-    public function removeRessource(Utilisateur $ressource): static
+    public function removeRessource(Utilisateur $ressources): static
     {
-        $this->ressource->removeElement($ressource);
+        $this->ressources->removeElement($ressources);
 
         return $this;
     }

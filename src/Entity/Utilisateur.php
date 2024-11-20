@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\DTO\RoleDTO;
+use App\Entity\DTO\RoleDTO;
 use App\Repository\UtilisateurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -24,12 +24,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $prenom = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $email = null;
 
     /**
      * @var list<string> Les rôles de l'utilisateur
@@ -74,7 +68,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection<int, Activite>
      */
     #[ORM\ManyToMany(targetEntity: Activite::class, mappedBy: 'responsables')]
-    private Collection $activitesResponsables;
+    private Collection $activites;
 
     public function __construct()
     {
@@ -82,7 +76,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $this->groupes = new ArrayCollection();
         $this->projetsDiriges = new ArrayCollection();
         $this->projetsParticipes = new ArrayCollection();
-        $this->activitesResponsables = new ArrayCollection();
+        $this->activites = new ArrayCollection();
 
         // Rôle par défaut
         $this->roles = [RoleDTO::ROLE_USER];
@@ -115,28 +109,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-        return $this;
-    }
-
-    public function getPrenom(): ?string
-    {
-        return $this->prenom;
-    }
-
-    public function setPrenom(string $prenom): static
-    {
-        $this->prenom = $prenom;
-        return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(?string $email): static
-    {
-        $this->email = $email;
         return $this;
     }
 
@@ -252,26 +224,13 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * Gestion des Activités
      * @return Collection<int, Activite>
      */
-    public function getActivitesResponsables(): Collection
+    public function getActivites(): Collection
     {
-        return $this->activitesResponsables;
-    }
-
-    /**
-     * Méthodes utilitaires
-     */
-    public function getNomComplet(): string
-    {
-        return sprintf('%s %s', $this->prenom, $this->nom);
+        return $this->activites;
     }
 
     public function hasRole(string $role): bool
     {
         return in_array($role, $this->getRoles());
-    }
-
-    public function __toString(): string
-    {
-        return $this->getNomComplet();
     }
 }

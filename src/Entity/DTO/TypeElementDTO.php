@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DTO;
+namespace App\Entity\DTO;
 
 enum TypeElement: string
 {
