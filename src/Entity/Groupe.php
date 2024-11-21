@@ -69,11 +69,6 @@ class Groupe
     {
         if (!$this->membres->contains($membre)) {
             $this->membres->add($membre);
-            // Met à jour les rôles de l'utilisateur
-            $membre->setRoles(array_unique(array_merge(
-                $membre->getRoles(),
-                $this->getRolesByGroupe()
-            )));
         }
 
         return $this;
@@ -83,10 +78,6 @@ class Groupe
     {
         if ($this->membres->removeElement($membre)) {
             // Retire les rôles associés au groupe
-            $membre->setRoles(array_diff(
-                $membre->getRoles(),
-                $this->getRolesByGroupe()
-            ));
         }
 
         return $this;

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Entity;
 
 use App\Entity\DTO\RoleDTO;
@@ -125,14 +124,14 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         // Garantit que chaque utilisateur a au moins ROLE_USER
         $roles = $this->roles;
         $roles[] = RoleDTO::ROLE_USER;
-        
-        return array_unique($roles);
-    }
 
-    public function setRoles(array $roles): static
-    {
-        $this->roles = $roles;
-        return $this;
+        // Ajouter des rôles supplémentaires en fonction des groupes de l'utilisateur
+        foreach ($this->groupes as $groupe) {
+            // Exemple d'ajout de rôle en fonction du groupe (si vous avez une logique à ce sujet)
+            $roles[] = $groupe->getValeur(); // Assurez-vous que 'getValeur()' retourne un rôle valide
+        }
+
+        return array_unique($roles);
     }
 
     /**
@@ -175,29 +174,31 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->groupes;
     }
 
+    /**
+     * Add a group to the user
+     * @param Groupe $groupe
+     * @return $this
+     */
     public function addGroupe(Groupe $groupe): static
     {
+        // Check if the group is already added
         if (!$this->groupes->contains($groupe)) {
+            // Add the group to the user's collection of groups
             $this->groupes->add($groupe);
-            
-            // Mise à jour des rôles
-            $this->setRoles(array_unique(array_merge(
-                $this->getRoles(),
-                $groupe->getRolesByGroupe()
-            )));
+
+            // Ensure the inverse side of the relation is also updated
+            if (!$groupe->getMembres()->contains($this)) {
+                $groupe->addMembre($this); // Assuming the Groupe entity has an `addMembre()` method
+            }
         }
 
         return $this;
     }
-
     public function removeGroupe(Groupe $groupe): static
     {
         if ($this->groupes->removeElement($groupe)) {
-            // Mise à jour des rôles en retirant les rôles du groupe
-            $this->setRoles(array_diff(
-                $this->getRoles(),
-                $groupe->getRolesByGroupe()
-            ));
+            // Remove the user from the group's members if needed
+            // Optionally, you can add extra logic here to handle any cleanup or role changes.
         }
 
         return $this;

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Form;
 
 use App\Entity\Projet;
@@ -9,6 +8,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Doctrine\ORM\EntityRepository;
 
 class ProjetType extends AbstractType
 {
@@ -31,16 +31,22 @@ class ProjetType extends AbstractType
             ])
             ->add('chef_de_projet', EntityType::class, [
                 'class' => Utilisateur::class,
-                'choice_label' => 'id',
+                'choice_label' => 'nom', // Changed to 'nom'
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('u')
+                        ->where('u.roles LIKE :role')
+                        ->setParameter('role', '%_CHEF_ROLE_PROJET%'); // Adjust based on your role definition
+                },
             ])
             ->add('ressource', EntityType::class, [
                 'class' => Utilisateur::class,
-                'choice_label' => 'id',
+                'choice_label' => 'nom', // Changed to 'nom'
                 'multiple' => true,
+                'by_reference' => false 
             ])
             ->add('statut', EntityType::class, [
                 'class' => Statut::class,
-                'choice_label' => 'id',
+                'choice_label' => 'description', // Change this if 'nom' exists in Statut entity
             ])
         ;
     }

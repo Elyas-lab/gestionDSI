@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/groupe')]
+#[Route('/Admin/groupe')]
 final class GroupeController extends AbstractController
 {
     #[Route(name: 'app_groupe_index', methods: ['GET'])]

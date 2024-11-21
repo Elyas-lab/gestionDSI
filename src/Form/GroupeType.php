@@ -47,14 +47,12 @@ class GroupeType extends AbstractType
                 'label' => 'Type de groupe',
                 'choices' => array_combine(
                     [
-                        'Administrateur', 
-                        'Manager', 
+                        'Administrateur',  
                         'Chef de Projet', 
                         'Utilisateur Standard'
                     ],
                     [
-                        RoleDTO::GROUPE_ADMIN, 
-                        RoleDTO::GROUPE_MANAGER, 
+                        RoleDTO::GROUPE_ADMIN,  
                         RoleDTO::GROUPE_CHEF_PROJET, 
                         RoleDTO::GROUPE_UTILISATEUR
                     ]

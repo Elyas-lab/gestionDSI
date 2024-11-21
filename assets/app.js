@@ -10,6 +10,9 @@ import './bootstrap.js';
 import './styles/app.css';
 import './bootstrap-5-dist/css/bootstrap.min.css';
 import './bootstrap-5-dist/js/bootstrap.bundle.js';
-import 'jquery/jquery.index.js';
-
+import 'DataTables/datatables.css'
+import 'DataTables/datatables.js'
+import 'DataTables/datatables.min.js'
+import 'DataTables/datatables.min.js'
+import 'controllers/jquery.min.js'
 console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');

@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/demandeur')]
+#[Route('/Admin/demandeur')]
 final class DemandeurController extends AbstractController
 {
     #[Route(name: 'app_demandeur_index', methods: ['GET'])]

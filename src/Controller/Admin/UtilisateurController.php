@@ -53,18 +53,23 @@ final class UtilisateurController extends AbstractController
     #[Route('/{id}/edit', name: 'app_utilisateur_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Utilisateur $utilisateur, EntityManagerInterface $entityManager): Response
     {
+        // Créer le formulaire avec l'entité Utilisateur
         $form = $this->createForm(UtilisateurType::class, $utilisateur);
+
+        // Traitement du formulaire lors de la soumission
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Sauvegarder l'entité en base de données
             $entityManager->flush();
-
-            return $this->redirectToRoute('app_utilisateur_index', [], Response::HTTP_SEE_OTHER);
+            // Rediriger ou afficher un message de succès
+            return $this->redirectToRoute('app_utilisateur_index');
         }
 
+        // Rendre la vue en passant le formulaire et l'entité utilisateur
         return $this->render('utilisateur/edit.html.twig', [
-            'utilisateur' => $utilisateur,
-            'form' => $form,
+            'form' => $form->createView(),
+            'utilisateur' => $utilisateur, // Passage de l'entité utilisateur à Twig
         ]);
     }
 

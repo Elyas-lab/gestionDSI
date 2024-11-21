@@ -12,10 +12,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/statut')]
+#[Route('/Admin/statut')]
 final class StatutController extends AbstractController
 {
-    private StatutGestion $statutGestion;
+    private StatutGestion $statutGestion;   
 
     public function __construct(StatutGestion $statutGestion)
     {

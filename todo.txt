@@ -1,4 +1,14 @@
-- creer les interfaces d'historique et d'acceuil
+- creer les interfaces d'historique et d'acceuil 
+- integrer datatable au affichage et gestion pagination
 - optimiser  des requests existant
 - styliser les interfaces
 - documenter les code existant
+
+#regle de gestion 
+- Admin can access to anything but can't own anythings
+- User optimiser la requetes initiales pour seulement affiché les projet&co ou je suis mentionés
+- User optimiser les acces pour seulement modifier les projet&co ou je suis mentionés
+- Everyone voir tous les demande et assistances
+- 
+
+NB: projet&co = un projet et ses enfants (activité et ses taches)

@@ -2,17 +2,45 @@
 
 {% block title %}Assistance index{% endblock %}
 
-{% block main %}
-    <h1>Assistance index</h1>
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap5.min.css">
+{% endblock %}
 
-    <table class="table">
+{% block main %}
+    <h1>Liste des Assistances</h1>
+
+    <a href="{{ path('app_assistance_new') }}" class="btn btn-primary mb-3">Create new</a>
+
+    <div class="datatable-form mb-3">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="custom-search" class="form-label">Recherche personnalisée:</label>
+                <input type="text" id="custom-search" class="form-control" placeholder="Rechercher dans tous les champs">
+            </div>
+            <div class="col-md-6">
+                <label for="column-filter" class="form-label">Filtrer par colonne:</label>
+                <select id="column-filter" class="form-select">
+                    <option value="">Toutes les colonnes</option>
+                    <option value="0">Id</option>
+                    <option value="1">Titre</option>
+                    <option value="2">Description</option>
+                    <option value="3">Date d'insertion</option>
+                    <option value="4">Statut</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <table id="assistance-table" class="table table-striped">
         <thead>
             <tr>
                 <th>Id</th>
                 <th>Titre</th>
                 <th>Description</th>
-                <th>Date_insertion</th>
-                <th>actions</th>
+                <th>Date d'insertion</th>
+                <th>Statut</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -22,18 +50,59 @@
                 <td>{{ assistance.titre }}</td>
                 <td>{{ assistance.description }}</td>
                 <td>{{ assistance.dateInsertion ? assistance.dateInsertion|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ assistance.statut }}</td>
                 <td>
-                    <a href="{{ path('app_assistance_show', {'id': assistance.id}) }}">show</a>
-                    <a href="{{ path('app_assistance_edit', {'id': assistance.id}) }}">edit</a>
+                    <a href="{{ path('app_assistance_show', {'id': assistance.id}) }}" class="btn btn-info btn-sm">Show</a>
+                    <a href="{{ path('app_assistance_edit', {'id': assistance.id}) }}" class="btn btn-warning btn-sm">Edit</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="5">no records found</td>
+                <td colspan="6">No records found</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_assistance_new') }}">Create new</a>
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+    $(document).ready(function() {
+        var table = $('#assistance-table').DataTable({
+            "pageLength": 10,
+            "language": {
+                "lengthMenu": "Afficher _MENU_ entrées par page",
+                "zeroRecords": "Aucun résultat trouvé",
+                "info": "Affichage de _START_ à _END_ sur _TOTAL_ entrées",
+                "infoEmpty": "Aucune entrée disponible",
+                "infoFiltered": "(filtré à partir de _MAX_ entrées totales)",
+                "search": "Rechercher:",
+                "paginate": {
+                    "first": "Premier",
+                    "last": "Dernier",
+                    "next": "Suivant",
+                    "previous": "Précédent"
+                }
+            }
+        });
+
+        // Custom search
+        $('#custom-search').on('keyup', function() {
+            table.search(this.value).draw();
+        });
+
+        // Column-specific filter
+        $('#column-filter').on('change', function() {
+            var columnIndex = $(this).val();
+            if (columnIndex !== '') {
+                table.column(columnIndex).search($('#custom-search').val()).draw();
+            } else {
+                table.search($('#custom-search').val()).draw();
+            }
+        });
+    });
+    </script>
+{% endblock %}
+

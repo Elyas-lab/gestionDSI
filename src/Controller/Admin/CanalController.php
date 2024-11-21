@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/canal')]
+#[Route('/Admin/canal')]
 final class CanalController extends AbstractController
 {
     #[Route(name: 'app_canal_index', methods: ['GET'])]
